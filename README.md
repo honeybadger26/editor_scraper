@@ -3,13 +3,13 @@
 1. Install Python.
 2. Install `requests` and `beautifulsoup4` for Python
 ```
-pip install requests beautifulsoup4
+pip install -r requirements.txt
 ```
 Alternatively use Python virtual environment:
 ```
 python -m venv env
 source env/bin/activate
-pip install requests beautifulsoup4
+pip install -r requirements.txt
 ```
 3. Run
 ```
