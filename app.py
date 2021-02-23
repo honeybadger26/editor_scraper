@@ -1,25 +1,34 @@
-from scrapers import elsevier, sage, springer
+from datetime import datetime
+import csv, os
 
-LINKS = [
-    # "https://www.springer.com/gp/product-search/discipline?topic=528000,G37000,G37010,P32000,Q16000,R19070,U00009,U12007,U13003,U1400X,U15000,U16002,U17009,U18005,U19001,U21006,U24005,U25001,U26008,U27004,U28000,U31001,U33000,U34000,U35000,U35010,U35020,U35030,U35040,U36000,W12220,W48000,W48010,X33040&disciplineId=environmentalsciences&facet=type__journal&returnUrl=gp%2Fenvironmental-sciences",
-    'https://journals.sagepub.com/action/showPublications?category=10.1555/category.46795717',
-    # "https://www.elsevier.com/en-au/search-results?labels=journals&subject-0=27350"
-]
+from scrapers import elsevier, sage, springer
+from links import LINKS
 
 # TODO: Error handling
-# TODO: Multiple attempts
+# TODO: Nicer output: https://stackoverflow.com/a/5291044
 
 def main():
+    if not os.path.exists('out'):
+        os.makedirs('out')
+    
+    filename = os.path.join('out/', '%s.csv' % datetime.now().strftime('%Y.%m.%d_%H.%M.%S'))
+    csv_columns = ['Name', 'E-mail', 'Title', 'Journal Title', 'Search Link']
+
+    csvfile = open(filename, 'w', newline='', encoding='utf-8')
+    writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
+    writer.writeheader()
+
     for link in LINKS:
         if 'www.springer.com' in link:
-            springer.scrape(link) 
+            springer.scrape(link, writer)
         elif 'journals.sagepub.com' in link:
-            sage.scrape(link)
+            sage.scrape(link, writer)
         elif 'www.elsevier.com' in link:
-            elsevier.scrape(link)
+            elsevier.scrape(link, writer)
         else:
-            print('>> ERROR: Incorrect link')
+            print('>> ERROR: INCORRECT LINK')
+
+    csvfile.close()
 
 if __name__ == '__main__':
     main()
-

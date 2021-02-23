@@ -1,6 +1,6 @@
 # editor_scraper
 ## Instructions
-1. Install Python.
+1. Requires **Python 3.9**
 2. Install `requests` and `beautifulsoup4` for Python
 ```
 pip install -r requirements.txt
