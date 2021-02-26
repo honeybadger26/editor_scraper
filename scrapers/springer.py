@@ -4,14 +4,16 @@ from time import sleep
 from common import get_soup, GOOGLE_LINK_BASE, TIMEOUT
 
 EDITORS_LINK_BASE = 'https://www.springer.com%s/editors'
-EMAIL_REGEX = '(?:[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])'
 JOURNAL_LINK_PREFIX = '/journal/'
 
 def scrape(base_link, csvwriter):
     editors_links = set()
     done = False
+
     page_num = 1
     total_pages = None
+    total_lines = 0
+    num_skipped = 0
 
     while not done:
         result_page_link = '%s&page=%d' % (base_link, page_num)
@@ -22,38 +24,44 @@ def scrape(base_link, csvwriter):
         if total_pages is None:
             total_pages = int(soup.find('span', class_='number-of-pages').text.strip())
 
-        print('SEARCHING PAGE %d OF %d' % (page_num, total_pages))
-
         link_elems = soup.find_all('a', href=True)
         for e in link_elems:
             if e['href'].startswith(JOURNAL_LINK_PREFIX):
                 editors_links.add(EDITORS_LINK_BASE % e['href'])
 
-        print('\tTOTAL JOURNALS FOUND: %d' % len(editors_links))
+        print('\r\033[K\tSEARCHING FOR JOURNALS [%d/%d] - FOUND: %d ' 
+            % (page_num, total_pages, len(editors_links)), end='')
+
         page_num += 1
         done = page_num > total_pages
 
-    for editors_link in editors_links:
-        print('QUERYING: %s' % editors_link)
+    print('')
+
+    for idx, editors_link in enumerate(editors_links):
+        print('\r\tSEARCHING JOURNALS [%d/%d] - ' % (idx+1, len(editors_links)), end='')
+
         soup = get_soup(editors_link)
 
         editorial_board_elem = soup.find('div', { 'id': 'editorialboard' })
 
         if editorial_board_elem is None:
-            print('\tEDITORIAL BOARD ELEMENT NOT FOUND. SKIPPING')
+            num_skipped += 1
             continue
 
-        data = {
-            'Name': '',
-            'Title': '',
-            'Search Link': ''
-        }
+        data = { 'Title': '' }
 
         data['Journal Title'] = soup.find('div', { 'id': 'journalTitle' }).text.strip()
 
-        emails = set(re.findall(EMAIL_REGEX, editorial_board_elem.text))
-        print('\t%s E-MAIL(S) FOUND' % len(emails))
+        lines = editorial_board_elem.text.splitlines()
+        lines = [ l for l in lines if l != '']
 
-        for email in emails:
-            data['E-mail'] = email
+        for line in lines:
+            data['Name'] = line
+            data['Search Link'] = GOOGLE_LINK_BASE + line.replace(' ', '+')
+
             csvwriter.writerow(data)
+            total_lines += 1
+
+        print('TOTAL LINES FOUND: %d - JOURNALS SKIPPED: %d \033[K' % (total_lines, num_skipped), end='')
+
+    print('')

@@ -5,27 +5,26 @@ EDITOR_LINK_BASE = 'https://journals.sagepub.com/editorial-board/%s'
 def scrape(link, csvwriter):
     soup = get_soup(link)
 
+    total_editors = 0
+
     # Find links for each journal
     journal_links = soup.find('div', class_='results').find('table').find_all('a', href=True)
 
-    print('JOURNALS FOUND: %d' % len(journal_links))
+    print('\tJOURNALS FOUND: %d' % len(journal_links))
 
-    for journal_link_elem in journal_links:
+    for idx, journal_link_elem in enumerate(journal_links):
         # Make link to editorial board page
         editorial_board_link = EDITOR_LINK_BASE % journal_link_elem['href'].removeprefix('/home/')
 
-        print('QUERYING: %s' % editorial_board_link)
+        print('\r\tSEARCHING JOURNAL [%d/%d] - ' % (idx+1, len(journal_links)), end='')
         soup = get_soup(editorial_board_link)
 
         data = {
-            'Journal Title': soup.find('a', { 'id': 'headerTitle' }).text.strip(),
-            'E-mail': ''
+            'Journal Title': soup.find('a', { 'id': 'headerTitle' }).text.strip()
         }
 
         # Get editors
         editor_elems = [ e.find('a') for e in soup.find_all('td', class_='ed-board-member') ]
-        print('\tEDITORS FOUND: %d' % len(editor_elems))
-
         editor_title = None
 
         for editor_elem in editor_elems:
@@ -42,5 +41,8 @@ def scrape(link, csvwriter):
             data['Search Link'] = google_link
 
             csvwriter.writerow(data)
+            total_editors += 1
 
+        print('TOTAL EDITORS FOUND: %d \033[K' % total_editors, end='')
 
+    print('')
