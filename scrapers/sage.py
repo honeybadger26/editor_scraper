@@ -1,27 +1,42 @@
-from common import get_soup, GOOGLE_LINK_BASE
+from time import sleep
+
+import common
 
 EDITOR_LINK_BASE = 'https://journals.sagepub.com/editorial-board/%s'
 
-def scrape(link, csvwriter):
-    soup = get_soup(link)
+def scrape(base_link, csvwriter):
+    editors_links = set()
+    done = False
 
+    page_num = 0
     total_editors = 0
 
-    # Find links for each journal
-    journal_links = soup.find('div', class_='results').find('table').find_all('a', href=True)
+    while not done:
+        search_page_link = '%s&startPage=%d' % (base_link, page_num)
 
-    print('\tJOURNALS FOUND: %d' % len(journal_links))
+        soup = common.get_soup(search_page_link)
+        sleep(common.TIMEOUT)
 
-    for idx, journal_link_elem in enumerate(journal_links):
-        # Make link to editorial board page
-        editorial_board_link = EDITOR_LINK_BASE % journal_link_elem['href'].removeprefix('/home/')
+        link_elems = soup.find('div', class_='results').find('table').find_all('a', href=True)
+        for e in link_elems:
+            editors_links.add(EDITOR_LINK_BASE % e['href'].removeprefix('/home/'))
 
-        print('\r\tSEARCHING JOURNAL [%d/%d] - ' % (idx+1, len(journal_links)), end='')
-        soup = get_soup(editorial_board_link)
+        print(common.SEARCHING_JOURNALS_MSG % (page_num+1, 'unknown', len(editors_links)), end='')
 
-        data = {
-            'Journal Title': soup.find('a', { 'id': 'headerTitle' }).text.strip()
-        }
+        page_num += 1
+        if soup.find('a', class_='nextPage') is None:
+            done = True
+
+    print('')
+
+    for idx, editors_link in enumerate(editors_links):
+        print('\r\tSEARCHING JOURNAL [%d/%d] - ' % (idx+1, len(editors_links)), end='')
+        soup = common.get_soup(editors_link)
+
+        row = common.CSVRow()
+        journal_title = soup.find('a', { 'id': 'headerTitle' }).text.strip()
+        row.journal_title = journal_title
+        row.source_link = editors_link
 
         # Get editors
         editor_elems = [ e.find('a') for e in soup.find_all('td', class_='ed-board-member') ]
@@ -32,15 +47,15 @@ def scrape(link, csvwriter):
             if new_editor_title != editor_title:
                 editor_title = new_editor_title
 
-            data['Title'] = editor_title
+            if not common.isallowedrole(editor_title):
+                continue
 
             editor_name = editor_elem.text.strip()
-            data['Name'] = editor_name
+            row.editor_name = editor_name
+            row.editor_title = editor_title
+            row.search_link = common.GOOGLE_LINK_BASE % (editor_name.replace(' ', '+'), journal_title.replace(' ', '+'))
 
-            google_link = GOOGLE_LINK_BASE + editor_name.replace(' ', '+')
-            data['Search Link'] = google_link
-
-            csvwriter.writerow(data)
+            csvwriter.writerow(row.getObj())
             total_editors += 1
 
         print('TOTAL EDITORS FOUND: %d \033[K' % total_editors, end='')

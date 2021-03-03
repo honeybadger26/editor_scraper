@@ -1,25 +1,23 @@
 import re
 from time import sleep
 
-from common import get_soup, GOOGLE_LINK_BASE, TIMEOUT
+import common
 
 EDITORS_LINK_BASE = 'https://www.springer.com%s/editors'
 JOURNAL_LINK_PREFIX = '/journal/'
 
-def scrape(base_link, csvwriter):
+
+def getjournallinks(base_link):
     editors_links = set()
     done = False
-
     page_num = 1
     total_pages = None
-    total_lines = 0
-    num_skipped = 0
 
     while not done:
         result_page_link = '%s&page=%d' % (base_link, page_num)
 
-        soup = get_soup(result_page_link)
-        sleep(TIMEOUT)
+        soup = common.get_soup(result_page_link)
+        sleep(common.TIMEOUT)
 
         if total_pages is None:
             total_pages = int(soup.find('span', class_='number-of-pages').text.strip())
@@ -29,18 +27,25 @@ def scrape(base_link, csvwriter):
             if e['href'].startswith(JOURNAL_LINK_PREFIX):
                 editors_links.add(EDITORS_LINK_BASE % e['href'])
 
-        print('\r\033[K\tSEARCHING FOR JOURNALS [%d/%d] - FOUND: %d ' 
-            % (page_num, total_pages, len(editors_links)), end='')
+        print(common.SEARCHING_JOURNALS_MSG % (page_num, str(total_pages), len(editors_links)), end='')
 
         page_num += 1
         done = page_num > total_pages
+    
+    return editors_links
 
+
+def scrape(base_link, csvwriter):
+    total_lines = 0
+    num_skipped = 0
+
+    editors_links = getjournallinks(base_link)
     print('')
 
     for idx, editors_link in enumerate(editors_links):
         print('\r\tSEARCHING JOURNALS [%d/%d] - ' % (idx+1, len(editors_links)), end='')
 
-        soup = get_soup(editors_link)
+        soup = common.get_soup(editors_link)
 
         editorial_board_elem = soup.find('div', { 'id': 'editorialboard' })
 
@@ -48,18 +53,19 @@ def scrape(base_link, csvwriter):
             num_skipped += 1
             continue
 
-        data = { 'Title': '' }
-
-        data['Journal Title'] = soup.find('div', { 'id': 'journalTitle' }).text.strip()
+        row = common.CSVRow()
+        journal_title = soup.find('div', { 'id': 'journalTitle' }).text.strip()
+        row.journal_title = journal_title
+        row.source_link = editors_links
 
         lines = editorial_board_elem.text.splitlines()
         lines = [ l for l in lines if l != '']
 
         for line in lines:
-            data['Name'] = line
-            data['Search Link'] = GOOGLE_LINK_BASE + line.replace(' ', '+')
+            row.editor_name = line
+            row.search_link = common.GOOGLE_LINK_BASE % (line.replace(' ', '+'), journal_title.replace(' ', '+'))
 
-            csvwriter.writerow(data)
+            csvwriter.writerow(row.getObj())
             total_lines += 1
 
         print('TOTAL LINES FOUND: %d - JOURNALS SKIPPED: %d \033[K' % (total_lines, num_skipped), end='')

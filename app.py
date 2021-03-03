@@ -3,6 +3,7 @@ import csv, os
 
 from scrapers import elsevier, sage, springer
 from links import LINKS
+from common import CSVRow
 
 # TODO: Error handling
 
@@ -11,7 +12,7 @@ def main():
         os.makedirs('out')
     
     filename = os.path.join('out/', '%s.csv' % datetime.now().strftime('%Y.%m.%d_%H.%M.%S'))
-    csv_columns = ['Name', 'Title', 'Journal Title', 'Search Link']
+    csv_columns = list(CSVRow().getObj().keys())
 
     csvfile = open(filename, 'w', newline='', encoding='utf-8')
     writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
