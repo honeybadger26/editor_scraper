@@ -1,9 +1,8 @@
-from datetime import datetime
-import csv, os
+import os
 
 from scrapers import elsevier, sage, springer
 from links import LINKS
-from common import CSVRow
+from common import CSVWriter, CSVRow
 
 # TODO: Error handling
 
@@ -11,27 +10,22 @@ def main():
     if not os.path.exists('out'):
         os.makedirs('out')
     
-    filename = os.path.join('out/', '%s.csv' % datetime.now().strftime('%Y.%m.%d_%H.%M.%S'))
-    csv_columns = list(CSVRow().getObj().keys())
-
-    csvfile = open(filename, 'w', newline='', encoding='utf-8')
-    writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
-    writer.writeheader()
+    csvwriter = CSVWriter()
 
     for idx, link in enumerate(LINKS):
         print('LINK %d OF %d' % (idx+1, len(LINKS)))
 
         if 'www.springer.com' in link:
-            springer.scrape(link, writer)
+            springer.scrape(link, csvwriter)
         elif 'journals.sagepub.com' in link:
-            sage.scrape(link, writer)
+            sage.scrape(link, csvwriter)
         elif 'www.elsevier.com' in link:
-            elsevier.scrape(link, writer)
+            elsevier.scrape(link, csvwriter)
         else:
             print('ERROR: INCORRECT LINK')
 
     print('DONE')
-    csvfile.close()
+    csvwriter.teardown()
 
 if __name__ == '__main__':
     main()

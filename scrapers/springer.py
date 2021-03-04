@@ -56,7 +56,7 @@ def scrape(base_link, csvwriter):
         row = common.CSVRow()
         journal_title = soup.find('div', { 'id': 'journalTitle' }).text.strip()
         row.journal_title = journal_title
-        row.source_link = editors_links
+        row.source_link = editors_link
 
         lines = editorial_board_elem.text.splitlines()
         lines = [ l for l in lines if l != '']
@@ -65,7 +65,7 @@ def scrape(base_link, csvwriter):
             row.editor_name = line
             row.search_link = common.GOOGLE_LINK_BASE % (line.replace(' ', '+'), journal_title.replace(' ', '+'))
 
-            csvwriter.writerow(row.getObj())
+            csvwriter.writerow(row)
             total_lines += 1
 
         print('TOTAL LINES FOUND: %d - JOURNALS SKIPPED: %d \033[K' % (total_lines, num_skipped), end='')

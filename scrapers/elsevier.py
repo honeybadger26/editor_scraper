@@ -73,7 +73,7 @@ def scrape(base_link, csvwriter):
             row.editor_title = editor_title
             row.search_link = common.GOOGLE_LINK_BASE % (editor_name.replace(' ', '+'), journal_title.replace(' ', '+'))
 
-            csvwriter.writerow(row.getObj())
+            csvwriter.writerow(row)
             total_editors += 1
 
         print('TOTAL EDITORS FOUND: %d - JOURNALS SKIPPED: %d \033[K' % (total_editors, num_skipped), end='')
