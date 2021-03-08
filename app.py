@@ -1,31 +1,34 @@
 import os
 
-from scrapers import elsevier, sage, springer
 from links import LINKS
-from common import CSVWriter, CSVRow
-
-# TODO: Error handling
+from scrapers import *
+from common import CSVWriter, ErrorWriter
 
 def main():
     if not os.path.exists('out'):
         os.makedirs('out')
     
     csvwriter = CSVWriter()
+    errorwriter = ErrorWriter()
 
     for idx, link in enumerate(LINKS):
-        print('LINK %d OF %d' % (idx+1, len(LINKS)))
+        print('LINK %d/%d' % (idx+1, len(LINKS)))
 
         if 'www.springer.com' in link:
-            springer.scrape(link, csvwriter)
+            scraper = SpringerScraper(link, csvwriter, errorwriter)
         elif 'journals.sagepub.com' in link:
-            sage.scrape(link, csvwriter)
+            scraper = SageScraper(link, csvwriter, errorwriter)
         elif 'www.elsevier.com' in link:
-            elsevier.scrape(link, csvwriter)
+            scraper = ElsevierScraper(link, csvwriter, errorwriter)
         else:
-            print('ERROR: INCORRECT LINK')
+            errorwriter.addsearchlink(link)
+            continue
 
-    print('DONE')
+        scraper.getjournallinks()
+        scraper.geteditors()
+
     csvwriter.teardown()
+    print('DONE')
 
 if __name__ == '__main__':
     main()
