@@ -16,15 +16,6 @@ class BaseScraper():
         self.journallinks = set()
         self.numeditorsfound = 0
 
-    def buildsearchpageurl(self):
-        pass
-
-    def scrapejournallinks(self):
-        pass
-
-    def hasnextsearchpage(self):
-        pass
-
     def getjournallinks(self):
         done = False
 
@@ -43,18 +34,6 @@ class BaseScraper():
             self.searchpagenum += 1
 
         print(JOURNALS_FOUND_MSG % len(self.journallinks))
-
-    def getjournaltitle(self):
-        pass
-
-    def geteditorelems(self):
-        pass
-
-    def geteditorrole(self, elem):
-        pass
-
-    def geteditorname(self, elem):
-        pass
 
     def geteditorsonpage(self, link):
         self.soup = get_soup(link)
@@ -86,3 +65,25 @@ class BaseScraper():
             print(SEARCHING_EDITORS_MSG % (idx+1, len(self.journallinks), self.numeditorsfound), end='')
 
         print(EDITORS_FOUND_MSG % self.numeditorsfound)
+
+    # To override
+    def buildsearchpageurl(self):
+        pass
+
+    def scrapejournallinks(self):
+        pass
+
+    def hasnextsearchpage(self):
+        pass
+
+    def getjournaltitle(self):
+        pass
+
+    def geteditorelems(self):
+        pass
+
+    def geteditorrole(self, elem):
+        pass
+
+    def geteditorname(self, elem):
+        pass
