@@ -22,8 +22,8 @@ class SageScraper(BaseScraper):
     def geteditorelems(self):
         return [ e.find('a') for e in self.soup.find_all('td', class_='ed-board-member') ]
 
-    def geteditorrole(self, elem):
-        return elem.find_previous('div', class_='ed-board-name').text.strip()
-
     def geteditorname(self, elem):
         return elem.text.strip()
+
+    def geteditorrole(self, elem):
+        return elem.find_previous('div', class_='ed-board-name').text.strip()

@@ -6,36 +6,27 @@ from scrapers import *
 
 csvwriter = mock.Mock()
 errorwriter = mock.Mock()
-INVALID_LINK = 'http://blank.org/'
 
 class TestBase():
     def setUp(self):
         csvwriter.reset_mock()
         errorwriter.reset_mock()
 
-    def test_scrapejournallinkssuccess(self):
+    def test_scrapejournallinks(self):
         scraper = self.SCRAPER(self.SEARCH_RESULT_LINK, csvwriter, errorwriter)
         scraper.getjournallinks()
+
+        assert len(scraper.journallinks) != 0, 'Expected journals to be found'
         errorwriter.addsearchlink.assert_not_called()
 
-    def test_scrapejournalslinksfailed(self):
-        scraper = self.SCRAPER(INVALID_LINK, csvwriter, errorwriter)
-        scraper.getjournallinks()
-        errorwriter.addsearchlink.assert_called()
-
-    def test_scrapeeditorssuccess(self):
+    def test_scrapeeditors(self):
         scraper = self.SCRAPER('', csvwriter, errorwriter)
         scraper.journallinks = [self.JOURNAL_LINK]
         scraper.geteditors()
+
+        assert scraper.numeditorsfound != 0, 'Expected editors to be found'
         csvwriter.writerow.assert_called()
         errorwriter.addjournallink.assert_not_called()
-
-    def test_scrapeeditorsfailed(self):
-        scraper = self.SCRAPER('', csvwriter, errorwriter)
-        scraper.journallinks = [INVALID_LINK]
-        scraper.geteditors()
-        csvwriter.writerow.assert_not_called()
-        errorwriter.addjournallink.assert_called()
 
 class TestElsevier(TestBase, unittest.TestCase):
     @classmethod
@@ -57,3 +48,25 @@ class TestSpringer(TestBase, unittest.TestCase):
         cls.SEARCH_RESULT_LINK = 'https://www.springer.com/gp/search?dnc=true&facet-subj=subj__111000&facet-type=type__journal&query=energy+test&submit=Submit+Query'
         cls.JOURNAL_LINK = 'https://www.springer.com/journal/43937/editors'
         cls.SCRAPER = SpringerScraper
+
+class TestPLOS(TestBase, unittest.TestCase):
+    test_scrapejournallinks = property(doc='(!) Disallowed inherited')
+
+    @classmethod
+    def setUpClass(cls):
+        cls.JOURNAL_LINK = 'https://journals.plos.org/plosgenetics/s/editorial-board'
+        cls.SCRAPER = PLOSScraper
+
+class TestDovePress(TestBase, unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.SEARCH_RESULT_LINK = 'https://www.dovepress.com/browse_journals.php'
+        cls.JOURNAL_LINK = 'https://www.dovepress.com/journal-editor-hypoxia-eic149'
+        cls.SCRAPER = DovePressScraper
+
+class TestCambridge(TestBase, unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.SEARCH_RESULT_LINK = 'https://www.cambridge.org/core/what-we-publish/journals'
+        cls.JOURNAL_LINK = 'https://www.cambridge.org/core/journals/animal-health-research-reviews/information/editorial-board'
+        cls.SCRAPER = CambridgeScraper

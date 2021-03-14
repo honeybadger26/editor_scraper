@@ -4,6 +4,7 @@ EDITOR_LINK_BASE = 'https://www.springer.com%s/editors'
 JOURNAL_LINK_PREFIX = '/journal/'
 
 class SpringerScraper(BaseScraper):
+
     def buildsearchpageurl(self):
         return '%s&page=%d' % (self.searchpagebaseurl, self.searchpagenum)
 
@@ -30,8 +31,9 @@ class SpringerScraper(BaseScraper):
         lines = editorial_board_elem.text.splitlines()
         return [ l for l in lines if l != '']
 
+    def geteditorname(self, elem):
+        return elem
+
     def geteditorrole(self, elem):
         return ''
 
-    def geteditorname(self, elem):
-        return elem

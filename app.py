@@ -20,6 +20,15 @@ def main():
             scraper = SageScraper(link, csvwriter, errorwriter)
         elif 'www.elsevier.com' in link:
             scraper = ElsevierScraper(link, csvwriter, errorwriter)
+        elif 'www.dovepress.com' in link:
+            scraper = DovePressScraper(link, csvwriter, errorwriter)
+        elif 'www.cambridge.org' in link:
+            scraper = CambridgeScraper(link, csvwriter, errorwriter)
+        elif 'journals.plos.org' in link:
+            scraper = PLOSScraper(link, csvwriter, errorwriter)
+            scraper.journallinks = [link + 's/editorial-board']
+            scraper.geteditors()
+            continue
         else:
             errorwriter.addsearchlink(link)
             continue
