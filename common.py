@@ -11,7 +11,9 @@ TIMEOUT = 0
 FILE_ROW_LIMIT = 1000
 
 def get_soup(link):
-    r = requests.get(link)
+    r = requests.get(link, allow_redirects=True, headers={
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:86.0) Gecko/20100101 Firefox/86.0'
+    })
     sleep(TIMEOUT)
     return BeautifulSoup(r.content, 'html.parser')
 

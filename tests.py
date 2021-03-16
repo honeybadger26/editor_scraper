@@ -70,3 +70,10 @@ class TestCambridge(TestBase, unittest.TestCase):
         cls.SEARCH_RESULT_LINK = 'https://www.cambridge.org/core/what-we-publish/journals'
         cls.JOURNAL_LINK = 'https://www.cambridge.org/core/journals/animal-health-research-reviews/information/editorial-board'
         cls.SCRAPER = CambridgeScraper
+
+class TestRSC(TestBase, unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.SEARCH_RESULT_LINK = 'https://pubs.rsc.org/en/journals'
+        cls.JOURNAL_LINK = 'https://www.rsc.org/publishing/journals/dt/staff.asp'
+        cls.SCRAPER = RSCScraper

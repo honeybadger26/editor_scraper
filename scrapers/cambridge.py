@@ -5,7 +5,7 @@ JOURNAL_LINK_BASE = 'https://www.cambridge.org%s/information/editorial-board'
 class CambridgeScraper(BaseScraper):
 
     def buildsearchpageurl(self):
-        return self.searchpagebaseurl   # Assumes only one page
+        return self.searchpagebaseurl   # Assumes only one page. TODO: Put this in parent class
 
     def scrapejournallinks(self):
         linkelems = self.soup.find_all('a', class_='title', href=True)

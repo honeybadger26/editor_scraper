@@ -1,5 +1,4 @@
 from scrapers.base import BaseScraper
-
 class PLOSScraper(BaseScraper):
 
     def getjournaltitle(self):

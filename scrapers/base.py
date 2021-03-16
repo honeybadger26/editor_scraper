@@ -17,15 +17,19 @@ class BaseScraper():
         self.journallinks = set()
         self.numeditorsfound = 0
 
+    # Returns the URL of the next page to scrape for journal links
     def buildsearchpageurl(self):
         pass
 
+    # TODO: Return an array of journal links scraped from current page
     def scrapejournallinks(self):
         pass
 
+    # Returns whether there are more search pages to scrape journal links from
     def hasnextsearchpage(self):
         pass
 
+    # Scrape journal links from all search pages
     def getjournallinks(self):
         done = False
 
