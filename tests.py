@@ -1,7 +1,6 @@
 import unittest
 import unittest.mock as mock
 
-# import app
 from scrapers import *
 
 csvwriter = mock.Mock()
@@ -77,3 +76,17 @@ class TestRSC(TestBase, unittest.TestCase):
         cls.SEARCH_RESULT_LINK = 'https://pubs.rsc.org/en/journals'
         cls.JOURNAL_LINK = 'https://www.rsc.org/publishing/journals/dt/staff.asp'
         cls.SCRAPER = RSCScraper
+
+class TestMIT(TestBase, unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.SEARCH_RESULT_LINK = 'https://direct.mit.edu/journals/pages/browse-by-title'
+        cls.JOURNAL_LINK = 'https://direct.mit.edu/lmj/pages/editorial-info'
+        cls.SCRAPER = MITScraper
+
+class TestTaylorFrancis(TestBase, unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.SEARCH_RESULT_LINK = 'https://www.tandfonline.com/action/showPublications?pubType=journal'
+        cls.JOURNAL_LINK = 'https://www.tandfonline.com/action/journalInformation?show=editorialBoard&journalCode=raie20'
+        cls.SCRAPER = TaylorFrancisScraper

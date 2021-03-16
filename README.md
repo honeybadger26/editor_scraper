@@ -32,9 +32,9 @@ python -m unittest tests -b
 [X] PLOS
 [X] DovePress
 [X] Cambridge
-[] RSC
-[] MIT
-[] TaylorFrancis
+[X] RSC
+[X] MIT
+[X] TaylorFrancis
 [] Brill
 [] Frontiers
 

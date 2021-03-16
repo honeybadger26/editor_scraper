@@ -24,6 +24,12 @@ def main():
             scraper = DovePressScraper(link, csvwriter, errorwriter)
         elif 'www.cambridge.org' in link:
             scraper = CambridgeScraper(link, csvwriter, errorwriter)
+        elif 'pubs.rsc.org' in link:
+            scraper = RSCScraper(link, csvwriter, errorwriter)
+        elif 'direct.mit.edu' in link:
+            scraper = MITScraper(link, csvwriter, errorwriter)
+        elif 'www.tandfonline.com' in link:
+            scraper = TaylorFrancisScraper(link, csvwriter, errorwriter)
         elif 'journals.plos.org' in link:
             scraper = PLOSScraper(link, csvwriter, errorwriter)
             scraper.journallinks = [link + 's/editorial-board']

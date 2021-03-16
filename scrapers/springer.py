@@ -29,7 +29,7 @@ class SpringerScraper(BaseScraper):
     def geteditorelems(self):
         editorial_board_elem = self.soup.find('div', { 'id': 'editorialboard' })
         lines = editorial_board_elem.text.splitlines()
-        return [ l for l in lines if l != '']
+        return [ l for l in lines if l != '' ]
 
     def geteditorname(self, elem):
         return elem

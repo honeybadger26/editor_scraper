@@ -10,16 +10,16 @@ class RSCScraper(BaseScraper):
 
     def scrapejournallinks(self):
         print('\n\tSEARCHING FOR EDITORIAL BOARD LINK. THIS MIGHT TAKE A WHILE')
-        linkelems = self.soup.find('a', class_='list__item-link', href=True)
+        linkelems = self.soup.find_all('a', class_='list__item-link', href=True)
         assert len(linkelems) != 0, 'No journals found'
 
         for l in linkelems:
             link = JOURNAL_LINK_BASE % l['href']
             temp_soup = get_soup(link)
-            boardlinkelem = self.soup.find('a', class_='list__item-link', text='Editorial Board', href=True)
 
-            if boardlinkelem is not None:
-                self.journallinks.add(boardlinkelem['href'])
+            for infoelem in temp_soup.find_all('a', class_='list__item-link', href=True):
+                if infoelem.text.strip() == 'Editorial Board': 
+                    self.journallinks.add(infoelem['href'])
 
     def hasnextsearchpage(self):
         return False
@@ -37,4 +37,4 @@ class RSCScraper(BaseScraper):
         return elem.text.strip()    # TODO: Put this in parent class?
 
     def geteditorrole(self, elem):
-        return elem.find_previous_sibling('h4').text.strip()
+        return elem.find_previous('h4').text.strip()

@@ -5,3 +5,5 @@ from .plos import PLOSScraper
 from .dovepress import DovePressScraper
 from .cambridge import CambridgeScraper
 from .rsc import RSCScraper
+from .mit import MITScraper
+from .taylorfrancis import TaylorFrancisScraper
