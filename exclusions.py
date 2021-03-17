@@ -8,6 +8,7 @@ EXCLUSIONS = [
     'assistant', 
     'honorary', 
     'special issue', 
-    'book reviews', 
+    'book reviews',
+    'book review', 
     'committee'
 ]
