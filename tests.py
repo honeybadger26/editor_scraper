@@ -90,3 +90,10 @@ class TestTaylorFrancis(TestBase, unittest.TestCase):
         cls.SEARCH_RESULT_LINK = 'https://www.tandfonline.com/action/showPublications?pubType=journal'
         cls.JOURNAL_LINK = 'https://www.tandfonline.com/action/journalInformation?show=editorialBoard&journalCode=raie20'
         cls.SCRAPER = TaylorFrancisScraper
+
+class TestBrill(TestBase, unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.SEARCH_RESULT_LINK = 'https://brill.com/browse?et=j&level=parent&pageSize=10&pubschedule_1=upcoming&pubschedule_2=new&pubschedule_3=published&sort=datedescending'
+        cls.JOURNAL_LINK = 'https://brill.com/view/journals/rpal/rpal-overview.xml?rskey=cNbNpb&result=1'
+        cls.SCRAPER = BrillScraper

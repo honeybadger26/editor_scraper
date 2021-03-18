@@ -7,7 +7,7 @@ LINKS = [
     # 'https://www.cambridge.org/core/what-we-publish/journals',
     # 'https://pubs.rsc.org/en/journals',
     # 'https://direct.mit.edu/journals/pages/browse-by-title',
-    'https://www.tandfonline.com/action/showPublications?pubType=journal',
-    # 'https://brill.com/browse?et=j&level=parent&pageSize=10&pubschedule_1=upcoming&pubschedule_2=new&pubschedule_3=published&sort=datedescending',
+    # 'https://www.tandfonline.com/action/showPublications?pubType=journal',
+    'https://brill.com/browse?et=j&level=parent&pageSize=10&pubschedule_1=upcoming&pubschedule_2=new&pubschedule_3=published&sort=datedescending',
     # 'https://www.frontiersin.org/about/journals-a-z',
 ]

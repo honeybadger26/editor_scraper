@@ -30,6 +30,8 @@ def main():
             scraper = MITScraper(link, csvwriter, errorwriter)
         elif 'www.tandfonline.com' in link:
             scraper = TaylorFrancisScraper(link, csvwriter, errorwriter)
+        elif 'brill.com' in link:
+            scraper = BrillScraper(link, csvwriter, errorwriter)
         elif 'journals.plos.org' in link:
             scraper = PLOSScraper(link, csvwriter, errorwriter)
             scraper.journallinks = [link + 's/editorial-board']
