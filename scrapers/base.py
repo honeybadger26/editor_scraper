@@ -83,6 +83,7 @@ class BaseScraper():
 
     def geteditors(self):
         for idx, journallink in enumerate(self.journallinks):
+            self.currentjournalpage = journallink
             try:
                 self.geteditorsonpage(journallink)
             except:

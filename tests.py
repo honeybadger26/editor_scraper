@@ -97,3 +97,10 @@ class TestBrill(TestBase, unittest.TestCase):
         cls.SEARCH_RESULT_LINK = 'https://brill.com/browse?et=j&level=parent&pageSize=10&pubschedule_1=upcoming&pubschedule_2=new&pubschedule_3=published&sort=datedescending'
         cls.JOURNAL_LINK = 'https://brill.com/view/journals/rpal/rpal-overview.xml?rskey=cNbNpb&result=1'
         cls.SCRAPER = BrillScraper
+
+class TestFrontiers(TestBase, unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.SEARCH_RESULT_LINK = 'https://www.frontiersin.org/about/journals-a-z'
+        cls.JOURNAL_LINK = 'https://www.frontiersin.org/journals/1723'
+        cls.SCRAPER = FrontiersScraper

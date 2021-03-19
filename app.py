@@ -32,6 +32,8 @@ def main():
             scraper = TaylorFrancisScraper(link, csvwriter, errorwriter)
         elif 'brill.com' in link:
             scraper = BrillScraper(link, csvwriter, errorwriter)
+        elif 'www.frontiersin.org' in link:
+            scraper = FrontiersScraper(link, csvwriter, errorwriter)
         elif 'journals.plos.org' in link:
             scraper = PLOSScraper(link, csvwriter, errorwriter)
             scraper.journallinks = [link + 's/editorial-board']

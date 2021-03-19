@@ -8,3 +8,4 @@ from .rsc import RSCScraper
 from .mit import MITScraper
 from .taylorfrancis import TaylorFrancisScraper
 from .brill import BrillScraper
+from .frontiers import FrontiersScraper

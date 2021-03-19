@@ -24,17 +24,3 @@ Run tests
 ```
 python -m unittest tests -b
 ```
-
-## Providers
-[X] Elsevier
-[X] Sage
-[X] Springer
-[X] PLOS
-[X] DovePress
-[X] Cambridge
-[X] RSC
-[X] MIT
-[X] TaylorFrancis
-[] Brill
-[] Frontiers
-
