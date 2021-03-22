@@ -8,16 +8,15 @@ class SpringerScraper(BaseScraper):
     def buildsearchpageurl(self):
         return '%s&page=%d' % (self.searchpagebaseurl, self.searchpagenum)
 
-    def scrapejournallinks(self):
+    def getjournalsonpage(self):
         linkelems = self.soup.find_all('a', href=True)
-        journalsfound = False
+        links = []
 
         for e in linkelems:
             if e['href'].startswith(JOURNAL_LINK_PREFIX):
-                journalsfound = True
-                self.journallinks.add(EDITOR_LINK_BASE % e['href'])
+                links.append(EDITOR_LINK_BASE % e['href'])
 
-        assert journalsfound, 'No journals found'
+        return links
 
     def hasnextsearchpage(self):
         nextpagebtn = self.soup.find('a', class_='next')

@@ -4,19 +4,14 @@ EDITOR_LINK_BASE = 'https://journals.sagepub.com/editorial-board/%s'
 
 class SageScraper(BaseScraper):
     def buildsearchpageurl(self):
-        # return '%s&startPage=%d' % (self.searchpagebaseurl, self.searchpagenum-1)
-        return self.searchpagebaseurl
+        return '%s?startPage=%d' % (self.searchpagebaseurl, self.searchpagenum-1)
 
-    def scrapejournallinks(self):
+    def getjournalsonpage(self):
         linkelems = self.soup.find('div', class_='results').find('table').find_all('a', href=True)
-        assert len(linkelems) != 0, 'No journals jound'
-        for e in linkelems:
-            self.journallinks.add(EDITOR_LINK_BASE % e['href'].removeprefix('/home/'))
+        return [ EDITOR_LINK_BASE % e['href'].removeprefix('/home/') for e in linkelems ]
 
     def hasnextsearchpage(self):
-        # nextpagebtn = self.soup.find('a', class_='nextPage')
-        # return nextpagebtn is not None
-        return False
+        return self.soup.find('a', class_='nextPage') is not None
 
     def getjournaltitle(self):
         return self.soup.find('a', { 'id': 'headerTitle' }).text.strip()

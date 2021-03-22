@@ -7,13 +7,11 @@ class MITScraper(BaseScraper):
     def buildsearchpageurl(self):
         return self.searchpagebaseurl
 
-    def scrapejournallinks(self):
+    def getjournalsonpage(self):
         linkelems = self.soup \
             .find('div', class_='widget-SelfServeContent widget-instance-SelfServeContent') \
             .find_all('a', href=True)
-        assert len(linkelems) != 0, 'No journals found'
-        for l in linkelems:
-            self.journallinks.add(JOURNAL_LINK_BASE % l['href'])
+        return [ JOURNAL_LINK_BASE % l['href'] for l in linkelems ]
 
     def hasnextsearchpage(self):
         return False

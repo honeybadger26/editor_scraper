@@ -11,14 +11,10 @@ class FrontiersScraper(BaseScraper):
     def buildsearchpageurl(self):
         return self.searchpagebaseurl
 
-    def scrapejournallinks(self):
+    def getjournalsonpage(self):
         wrapperelems = self.soup.findAll('h5', class_='clearfix pull-left')
         linkelems = [ e.find('a', href=True) for e in wrapperelems ]
-
-        assert len(linkelems) != 0, 'No journals found'
-
-        for l in linkelems:
-            self.journallinks.add(l['href'])
+        return [ l['href'] for l in linkelems]
 
     def hasnextsearchpage(self):
         return False
@@ -33,17 +29,13 @@ class FrontiersScraper(BaseScraper):
         url = API_BASE_URL % (journalid, pagenum)
         payload = API_PAYLOAD % journalid
 
-        print('\tFETCHING ALL EDITORS. THIS MIGHT TAKE A WHILE')
         r = requests.post(url, data=payload, headers=API_HEADERS)
         response = r.json()
 
         editorelems = []
         while 'Editors' in response and response['Editors'] is not None:
-            for editor in response['Editors']:
-                editorelems.append({                  
-                    'Name': editor['FullName'],
-                    'Role': editor['Role']['Name']
-                })
+            for e in response['Editors']:
+                editorelems.append(e)
 
             pagenum += 1
             url = API_BASE_URL % (journalid, pagenum)
@@ -53,7 +45,7 @@ class FrontiersScraper(BaseScraper):
         return editorelems
 
     def geteditorrole(self, elem):
-        return elem['Role']
+        return elem['Role']['Name']
 
     def geteditorname(self, elem):
-        return elem['Name']
+        return elem['FullName']

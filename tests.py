@@ -11,7 +11,7 @@ class TestBase():
         csvwriter.reset_mock()
         errorwriter.reset_mock()
 
-    def test_scrapejournallinks(self):
+    def test_scrapejournals(self):
         scraper = self.SCRAPER(self.SEARCH_RESULT_LINK, csvwriter, errorwriter)
         scraper.getjournallinks()
 
@@ -49,7 +49,7 @@ class TestSpringer(TestBase, unittest.TestCase):
         cls.SCRAPER = SpringerScraper
 
 class TestPLOS(TestBase, unittest.TestCase):
-    test_scrapejournallinks = property(doc='(!) Disallowed inherited')
+    test_scrapejournals = property(doc='(!) Disallowed inherited')
 
     @classmethod
     def setUpClass(cls):

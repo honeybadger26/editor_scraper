@@ -8,10 +8,9 @@ class RSCScraper(BaseScraper):
     def buildsearchpageurl(self):
         return self.searchpagebaseurl
 
-    def scrapejournallinks(self):
-        print('\n\tSEARCHING FOR EDITORIAL BOARD LINK. THIS MIGHT TAKE A WHILE')
+    def getjournalsonpage(self):
         linkelems = self.soup.find_all('a', class_='list__item-link', href=True)
-        assert len(linkelems) != 0, 'No journals found'
+        links = []
 
         for l in linkelems:
             link = JOURNAL_LINK_BASE % l['href']
@@ -19,7 +18,9 @@ class RSCScraper(BaseScraper):
 
             for infoelem in temp_soup.find_all('a', class_='list__item-link', href=True):
                 if infoelem.text.strip() == 'Editorial Board': 
-                    self.journallinks.add(infoelem['href'])
+                    links.append(infoelem['href'])
+
+        return links
 
     def hasnextsearchpage(self):
         return False

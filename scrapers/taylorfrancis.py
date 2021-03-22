@@ -8,12 +8,9 @@ class TaylorFrancisScraper(BaseScraper):
     def buildsearchpageurl(self):
         return '%s&startPage=%d' % (self.searchpagebaseurl, self.searchpagenum-1)
 
-    def scrapejournallinks(self):
+    def getjournalsonpage(self):
         linkelems = self.soup.find('ol', class_='browse-results browse').find_all('a', class_='ref', href=True)
-        assert len(linkelems) != 0, 'No journals jound'
-        for e in linkelems:
-            link = JOURNAL_LINK_BASE % e['href'].replace('/toc/', '').replace('/current', '')
-            self.journallinks.add(link)
+        return [ JOURNAL_LINK_BASE % e['href'].replace('/toc/', '').replace('/current', '') for e in linkelems ]
 
     def hasnextsearchpage(self):
         return self.soup.find('a', class_='nextPage') is not None

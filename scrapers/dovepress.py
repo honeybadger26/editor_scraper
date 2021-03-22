@@ -7,21 +7,22 @@ class DovePressScraper(BaseScraper):
     def buildsearchpageurl(self):
         return self.searchpagebaseurl   # Assumes only one page
 
-    def scrapejournallinks(self):
+    def getjournalsonpage(self):
         linkelemgroups = self.soup.find_all('div', class_='alpha-content')
 
         linkelems = []
         for e in linkelemgroups:
             linkelems.extend(e.find_all('a', href=True))
 
-        assert len(linkelems) != 0, 'No journals found'
-
+        links = []
         for l in linkelems:
             link = JOURNAL_LINK_BASE % l['href']
             temp_soup = get_soup(link)
             board_link_elem =  temp_soup.find('a', href=True, text='Editors')
             if board_link_elem is not None:
-                self.journallinks.add(JOURNAL_LINK_BASE % board_link_elem['href'])
+                links.append(JOURNAL_LINK_BASE % board_link_elem['href'])
+
+        return links
 
     def hasnextsearchpage(self):
         return False        # Assumes only one page

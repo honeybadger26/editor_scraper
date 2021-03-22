@@ -12,7 +12,7 @@ def main():
     errorwriter = ErrorWriter()
 
     for idx, link in enumerate(LINKS):
-        print('LINK %d/%d' % (idx+1, len(LINKS)))
+        print('Scraping link %d of %d (%s)' % (idx+1, len(LINKS), link))
 
         if 'www.springer.com' in link:
             scraper = SpringerScraper(link, csvwriter, errorwriter)
@@ -21,10 +21,12 @@ def main():
         elif 'www.elsevier.com' in link:
             scraper = ElsevierScraper(link, csvwriter, errorwriter)
         elif 'www.dovepress.com' in link:
+            print('DovePress: Need to query each journal link for editorial board, this might take a while')
             scraper = DovePressScraper(link, csvwriter, errorwriter)
         elif 'www.cambridge.org' in link:
             scraper = CambridgeScraper(link, csvwriter, errorwriter)
         elif 'pubs.rsc.org' in link:
+            print('RSoC: Need to query each journal link for editorial board, this might take a while')
             scraper = RSCScraper(link, csvwriter, errorwriter)
         elif 'direct.mit.edu' in link:
             scraper = MITScraper(link, csvwriter, errorwriter)
@@ -33,6 +35,7 @@ def main():
         elif 'brill.com' in link:
             scraper = BrillScraper(link, csvwriter, errorwriter)
         elif 'www.frontiersin.org' in link:
+            print('Frontiers: Need to query API, this might take a while')
             scraper = FrontiersScraper(link, csvwriter, errorwriter)
         elif 'journals.plos.org' in link:
             scraper = PLOSScraper(link, csvwriter, errorwriter)
@@ -40,6 +43,7 @@ def main():
             scraper.geteditors()
             continue
         else:
+            print('Error: Invalid link')
             errorwriter.addsearchlink(link)
             continue
 
@@ -47,7 +51,7 @@ def main():
         scraper.geteditors()
 
     csvwriter.teardown()
-    print('DONE')
+    print('Done, quitting...')
 
 if __name__ == '__main__':
     main()

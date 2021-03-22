@@ -1,7 +1,5 @@
 from common import get_soup, CSVRow, passedfilter
 
-SEARCHING_JOURNALS_MSG = '\r\033[K\tSEARCHING FOR JOURNALS [PAGE %d] - FOUND: %d'
-JOURNALS_FOUND_MSG = '\r\033[K\tJOURNALS FOUND: %d'
 SEARCHING_EDITORS_MSG = '\r\033[K\tSEARCHING FOR EDITORS [PAGE %d/%d] - FOUND: %d'
 EDITORS_FOUND_MSG = '\r\033[K\tEDITORS FOUND: %d'
 
@@ -22,7 +20,7 @@ class BaseScraper():
         pass
 
     # TODO: Return an array of journal links scraped from current page
-    def scrapejournallinks(self):
+    def getjournalsonpage(self):
         pass
 
     # Returns whether there are more search pages to scrape journal links from
@@ -33,21 +31,24 @@ class BaseScraper():
     def getjournallinks(self):
         done = False
 
+        print('Scraping journals. Journals found on each page: ', end='')
         while not done:
             searchpageurl = self.buildsearchpageurl()
             self.soup = get_soup(searchpageurl)
 
             try:
-                self.scrapejournallinks()
-            except:
+                journals = self.getjournalsonpage()
+                print(len(journals), end=', ')
+                for j in journals:
+                    self.journallinks.add(j)
+            except Exception as e:
+                print('\nError: %s' % str(e))
                 self.errorwriter.addsearchlink(searchpageurl)
-
-            print(SEARCHING_JOURNALS_MSG % (self.searchpagenum, len(self.journallinks)), end='')
 
             done = not self.hasnextsearchpage()
             self.searchpagenum += 1
-
-        print(JOURNALS_FOUND_MSG % len(self.journallinks))
+        
+        print('\nTotal journals found: %d' % len(self.journallinks))
 
     def getjournaltitle(self):
         pass
@@ -70,6 +71,7 @@ class BaseScraper():
         row.source_link = link
 
         editorelems = self.geteditorelems()
+        editors = []
 
         for e in editorelems:
             row.editor_name = self.geteditorname(e)
@@ -78,17 +80,24 @@ class BaseScraper():
             if not passedfilter(row.editor_name, row.editor_title):
                 continue
 
-            self.writer.writerow(row)
-            self.numeditorsfound += 1
+            editors.append(row)
+
+        return editors
 
     def geteditors(self):
-        for idx, journallink in enumerate(self.journallinks):
+        print('Scraping editors. Editors found for each journal: ', end='')
+
+        for journallink in self.journallinks:
             self.currentjournalpage = journallink
+
             try:
-                self.geteditorsonpage(journallink)
+                editors = self.geteditorsonpage(journallink)
+                print(len(editors), end='')
+                self.numeditorsfound += len(editors)
+                for e in editors:
+                    self.writer.writerow(e)
             except:
+                print('\nError: %s' % str(e))
                 self.errorwriter.addjournallink(journallink)
 
-            print(SEARCHING_EDITORS_MSG % (idx+1, len(self.journallinks), self.numeditorsfound), end='')
-
-        print(EDITORS_FOUND_MSG % self.numeditorsfound)
+        print('\nTotal editors found: %d' % self.numeditorsfound)

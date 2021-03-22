@@ -7,14 +7,10 @@ class BrillScraper(BaseScraper):
     def buildsearchpageurl(self):
         return '%s&page=%d' % (self.searchpagebaseurl, self.searchpagenum)
 
-    def scrapejournallinks(self):
+    def getjournalsonpage(self):
         linkwrapperelems = self.soup.find_all('div', class_='typography-body text-headline color-primary')
         linkelems = [ e.find('a', class_='c-Button--link', href=True) for e in linkwrapperelems ]
-
-        assert len(linkelems) != 0, 'No journals found'
-
-        for e in linkelems:
-            self.journallinks.add(JOURNAL_LINK_BASE % e['href'])
+        return [ JOURNAL_LINK_BASE % e['href'] for e in linkelems]
 
     def hasnextsearchpage(self):
         pageswrapperelem = self.soup.find('div', class_='t-data-grid-pager')

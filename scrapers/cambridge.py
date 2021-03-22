@@ -7,10 +7,9 @@ class CambridgeScraper(BaseScraper):
     def buildsearchpageurl(self):
         return self.searchpagebaseurl   # Assumes only one page. TODO: Put this in parent class
 
-    def scrapejournallinks(self):
+    def getjournalsonpage(self):
         linkelems = self.soup.find_all('a', class_='title', href=True)
-        for l in linkelems:
-            self.journallinks.add(JOURNAL_LINK_BASE % l['href'])
+        return [ JOURNAL_LINK_BASE % l['href'] for l in linkelems ]
 
     def hasnextsearchpage(self):
         return False # Assumes only one page
