@@ -44,7 +44,7 @@ class CSVWriter():
 
     def setup(self):
         filename = os.path.join('out/', '%s.csv' % datetime.now().strftime('%Y.%m.%d_%H.%M.%S'))
-        csv_columns = list(CSVRow().getObj().keys())
+        csv_columns = ['Name', 'Title', 'Journal Title', 'Source URL', 'Search Link' ]
 
         self.csvfile = open(filename, 'w', newline='', encoding='utf-8')
         self.writer = csv.DictWriter(self.csvfile, fieldnames=csv_columns)
@@ -56,28 +56,9 @@ class CSVWriter():
         self.csvfile.close()
 
     def writerow(self, row):
-        self.writer.writerow(row.getObj())
+        self.writer.writerow(row)
         self.numrows += 1
 
         if self.numrows >= FILE_ROW_LIMIT:
             self.teardown()
             self.setup()
-
-class CSVRow():
-    editor_name = ''
-    editor_title = ''
-    journal_title = ''
-    source_link = ''
-
-    def getObj(self):
-        search_link = GOOGLE_LINK_BASE % (
-            self.editor_name.replace(' ', '+'), 
-            self.journal_title.replace(' ', '+')
-        )
-        return {
-            'Name': self.editor_name,
-            'Title': self.editor_title,
-            'Journal Title': self.journal_title,
-            'Source URL': self.source_link,
-            'Search Link': search_link
-        }

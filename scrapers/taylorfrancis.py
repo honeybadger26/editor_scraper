@@ -23,7 +23,7 @@ class TaylorFrancisScraper(BaseScraper):
         lines = boardelem.text.split('  ')
         return [ l.strip() for l in lines if l.strip() != '' ]
 
-    # TODO: Next methods are repeated code
+    # FIXME: Next methods are repeated code
     def geteditorname(self, elem):
         return elem
 

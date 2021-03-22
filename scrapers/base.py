@@ -1,7 +1,8 @@
-from common import get_soup, CSVRow, passedfilter
+from common import get_soup, passedfilter
 
 SEARCHING_EDITORS_MSG = '\r\033[K\tSEARCHING FOR EDITORS [PAGE %d/%d] - FOUND: %d'
 EDITORS_FOUND_MSG = '\r\033[K\tEDITORS FOUND: %d'
+GOOGLE_LINK_BASE = 'http://www.google.com/search?q=%s+"%s"'
 
 class BaseScraper():
 
@@ -13,13 +14,13 @@ class BaseScraper():
         self.searchpagenum = 1
 
         self.journallinks = set()
-        self.numeditorsfound = 0
+        self.editors = []
 
     # Returns the URL of the next page to scrape for journal links
     def buildsearchpageurl(self):
         pass
 
-    # TODO: Return an array of journal links scraped from current page
+    # Return an array of journal links scraped from current page
     def getjournalsonpage(self):
         pass
 
@@ -66,21 +67,26 @@ class BaseScraper():
         self.soup = get_soup(link)
         journaltitle = self.getjournaltitle()
 
-        row = CSVRow()
-        row.journal_title = journaltitle
-        row.source_link = link
-
         editorelems = self.geteditorelems()
         editors = []
 
         for e in editorelems:
-            row.editor_name = self.geteditorname(e)
-            row.editor_title = self.geteditorrole(e)
+            editor_name = self.geteditorname(e)
+            editor_title = self.geteditorrole(e)
 
-            if not passedfilter(row.editor_name, row.editor_title):
+            if not passedfilter(editor_name, editor_title):
                 continue
 
-            editors.append(row)
+            editors.append({
+                'Name': editor_name,
+                'Title': editor_title,
+                'Journal Title': journaltitle,
+                'Source URL': link,
+                'Search Link': GOOGLE_LINK_BASE % (
+                        editor_name.replace(' ', '+'), 
+                        journaltitle.replace(' ', '+')
+                    )
+            })
 
         return editors
 
@@ -93,11 +99,13 @@ class BaseScraper():
             try:
                 editors = self.geteditorsonpage(journallink)
                 print(len(editors), end='')
-                self.numeditorsfound += len(editors)
                 for e in editors:
-                    self.writer.writerow(e)
-            except:
+                    self.editors.append(e)
+            except Exception as e:
                 print('\nError: %s' % str(e))
                 self.errorwriter.addjournallink(journallink)
+        
+        print('\nTotal editors found: %d' % len(self.editors))
 
-        print('\nTotal editors found: %d' % self.numeditorsfound)
+        for e in self.editors:
+            self.writer.writerow(e)

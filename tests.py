@@ -1,3 +1,5 @@
+import os, json
+from datetime import datetime
 import unittest
 import unittest.mock as mock
 
@@ -18,14 +20,23 @@ class TestBase():
         assert len(scraper.journallinks) != 0, 'Expected journals to be found'
         errorwriter.addsearchlink.assert_not_called()
 
+        filename = os.path.join('out/', 'test_journals_%s.json' % datetime.now().strftime('%Y.%m.%d_%H.%M.%S'))
+        with open(filename, 'w') as outfile:
+            json.dump(list(scraper.journallinks), outfile, indent=1)
+
+
     def test_scrapeeditors(self):
         scraper = self.SCRAPER('', csvwriter, errorwriter)
         scraper.journallinks = [self.JOURNAL_LINK]
         scraper.geteditors()
 
-        assert scraper.numeditorsfound != 0, 'Expected editors to be found'
+        assert len(scraper.editors) != 0, 'Expected editors to be found'
         csvwriter.writerow.assert_called()
         errorwriter.addjournallink.assert_not_called()
+
+        filename = os.path.join('out/', 'test_editors_%s.json' % datetime.now().strftime('%Y.%m.%d_%H.%M.%S'))
+        with open(filename, 'w') as outfile:
+            json.dump(scraper.editors, outfile, indent=1)
 
 class TestElsevier(TestBase, unittest.TestCase):
     @classmethod
@@ -38,7 +49,7 @@ class TestSage(TestBase, unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.SEARCH_RESULT_LINK = 'https://journals.sagepub.com/action/showPublications?category=10.1177/life-and-biomedical-sciences-cell-biology'
-        cls.JOURNAL_LINK = 'https://journals.sagepub.com/editorial-board/stia'
+        cls.JOURNAL_LINK = 'https://journals.sagepub.com/editorial-board/jima'
         cls.SCRAPER = SageScraper
 
 class TestSpringer(TestBase, unittest.TestCase):

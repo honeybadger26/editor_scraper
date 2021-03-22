@@ -4,7 +4,7 @@ EDITOR_LINK_BASE = 'https://journals.sagepub.com/editorial-board/%s'
 
 class SageScraper(BaseScraper):
     def buildsearchpageurl(self):
-        return '%s?startPage=%d' % (self.searchpagebaseurl, self.searchpagenum-1)
+        return '%s&startPage=%d' % (self.searchpagebaseurl, self.searchpagenum-1)
 
     def getjournalsonpage(self):
         linkelems = self.soup.find('div', class_='results').find('table').find_all('a', href=True)
