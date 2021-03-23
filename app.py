@@ -12,7 +12,7 @@ def main():
     errorwriter = ErrorWriter()
 
     for idx, link in enumerate(LINKS):
-        print('Scraping link %d of %d (%s)' % (idx+1, len(LINKS), link))
+        print('Link %d/%d' % (idx+1, len(LINKS)))
 
         if 'www.springer.com' in link:
             scraper = SpringerScraper(link, csvwriter, errorwriter)
@@ -51,7 +51,7 @@ def main():
         scraper.geteditors()
 
     csvwriter.teardown()
-    print('Done, quitting...')
+    print('Done')
 
 if __name__ == '__main__':
     main()

@@ -1,4 +1,4 @@
-from common import get_soup, passedfilter
+from common import get_soup, passedfilter, printthisline
 
 SEARCHING_EDITORS_MSG = '\r\033[K\tSEARCHING FOR EDITORS [PAGE %d/%d] - FOUND: %d'
 EDITORS_FOUND_MSG = '\r\033[K\tEDITORS FOUND: %d'
@@ -32,24 +32,24 @@ class BaseScraper():
     def getjournallinks(self):
         done = False
 
-        print('Scraping journals. Journals found on each page: ', end='')
         while not done:
             searchpageurl = self.buildsearchpageurl()
             self.soup = get_soup(searchpageurl)
 
             try:
                 journals = self.getjournalsonpage()
-                print(len(journals), end=', ')
                 for j in journals:
                     self.journallinks.add(j)
+                printthisline('Scraping journals [Page: %d - Found on page: %d - Total found: %d]'
+                    % (self.searchpagenum, len(journals), len(self.journallinks)))
             except Exception as e:
                 print('\nError: %s' % str(e))
                 self.errorwriter.addsearchlink(searchpageurl)
 
             done = not self.hasnextsearchpage()
             self.searchpagenum += 1
-        
-        print('\nTotal journals found: %d' % len(self.journallinks))
+
+        print('')
 
     def getjournaltitle(self):
         pass
@@ -91,21 +91,22 @@ class BaseScraper():
         return editors
 
     def geteditors(self):
-        print('Scraping editors. Editors found for each journal: ', end='')
+        totaleditors = 0
 
-        for journallink in self.journallinks:
+        for idx, journallink in enumerate(self.journallinks):
             self.currentjournalpage = journallink
 
             try:
                 editors = self.geteditorsonpage(journallink)
-                print(len(editors), end='')
+
                 for e in editors:
-                    self.editors.append(e)
+                    self.writer.writerow(e)
+                    totaleditors += 1
+                
+                printthisline('Scraping editors [Page: %d/%d - Found on page: %d - Total found: %d]' 
+                    % (idx+1, len(self.journallinks), len(editors), totaleditors))
             except Exception as e:
                 print('\nError: %s' % str(e))
                 self.errorwriter.addjournallink(journallink)
-        
-        print('\nTotal editors found: %d' % len(self.editors))
 
-        for e in self.editors:
-            self.writer.writerow(e)
+        print('')

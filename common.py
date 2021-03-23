@@ -27,6 +27,9 @@ def passedfilter(name, role):
 
     return True
 
+def printthisline(msg):
+    print('\r%s' % msg, end=' '*20)
+
 class ErrorWriter():
     def addsearchlink(self, link):
         filename = os.path.join('out/', 'FailedSearchPages.csv')
